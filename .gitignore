@@ -1,0 +1,8 @@
+target
+.idea
+*.i??
+.classpath
+.project
+.settings
+.metadata
+application.properties
