@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ExampleWorkerTests {
-    private ExampleApplication worker;
+public class WorkerApplicationTests {
+    private WorkerApplication worker;
 
     private static final String EXPECTED_ZERO_AMOUNT_MSG = "The customer credit should cover all of the end amount to pay";
 
     @BeforeEach
     public void createNewWorkerInstance() {
-        worker = new ExampleApplication();
+        worker = new WorkerApplication();
     }
 
     /**
