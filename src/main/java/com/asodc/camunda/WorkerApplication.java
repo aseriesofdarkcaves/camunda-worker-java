@@ -3,10 +3,8 @@ package com.asodc.camunda;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@EnableScheduling
 public class WorkerApplication {
     public static void main(String[] args) {
         SpringApplication.run(WorkerApplication.class, args);
@@ -35,7 +33,7 @@ public class WorkerApplication {
      * otherwise the end payment amount is the original payment amount minus the customer's credit.
      *
      * @param customerCredit the customer's current credit
-     * @param amountToPay the initial amount of the payment, without credit deductions
+     * @param amountToPay    the initial amount of the payment, without credit deductions
      * @return the end payment amount after the customer's credit has been applied
      */
     @JobWorker(type = "guthaben-belasten")
