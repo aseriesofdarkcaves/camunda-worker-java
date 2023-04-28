@@ -25,9 +25,20 @@ public class PaymentWorker {
      * @return the customer's current credit
      */
     @JobWorker(type = "guthaben-auslesen")
-    // TODO: I think I may have to return Maps in these methods...
+    /*
+        TODO: It looks like I am missing some mysterious parameters here:
+         - final JobClient jobClient
+         - final ActivatedJob job
+         Also, to auto-map process variables to the method parameters,
+         I need to use the @Variable annotation on them.
+         I think variables are communicated back to the process via a Map,
+         which you need to explicitly send via the JobClient.
+         Changing these methods also necessitates a change to the tests!
+         Apparently, JDK 17 is recommended for the test framework that Camunda
+         provides, so there's a lot of work to do here.
+     */
     public Double getCustomerCredit(String customerId) {
-        // TODO: customerId is null when it comes in here... why?
+        // customerId is null here because I have not used the @Variable annotation!
         String fakeCredit = customerId.substring(customerId.length() - 2);
 
         return Double.parseDouble(fakeCredit);
