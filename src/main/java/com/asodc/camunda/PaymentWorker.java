@@ -16,8 +16,6 @@ public class PaymentWorker {
     @Autowired
     private ZeebeClient client;
 
-    // TODO: I think I may have to return Maps in these methods...
-
     /**
      * Gets the credit of the customer with the id {@code customerId}.
      * As this is an example implementation, this method takes the last two numbers
@@ -27,7 +25,9 @@ public class PaymentWorker {
      * @return the customer's current credit
      */
     @JobWorker(type = "guthaben-auslesen")
+    // TODO: I think I may have to return Maps in these methods...
     public Double getCustomerCredit(String customerId) {
+        // TODO: customerId is null when it comes in here... why?
         String fakeCredit = customerId.substring(customerId.length() - 2);
 
         return Double.parseDouble(fakeCredit);
