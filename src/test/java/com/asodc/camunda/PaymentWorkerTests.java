@@ -4,9 +4,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests for the PaymentWorker.
+ */
 public class PaymentWorkerTests {
+    /**
+     * Worker instance to be reused in each test.
+     */
     private PaymentWorker worker;
 
+    /**
+     * Error message to use when the test fails because the credit didn't cover the amount to pay.
+     */
     private static final String EXPECTED_ZERO_AMOUNT_MSG = "The customer credit should cover all of the end amount to pay";
 
     @BeforeEach
