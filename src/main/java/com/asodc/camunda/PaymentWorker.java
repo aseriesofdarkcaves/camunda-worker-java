@@ -35,7 +35,7 @@ public class PaymentWorker {
 
         // generate some fake credit
         double customerCredit = Double.parseDouble(customerId.substring(customerId.length() - 2));
-        LOGGER.info("Customer credit: " + customerCredit);
+        LOGGER.info("Credit for customerId " + customerId + ": " + customerCredit);
 
         // get the existing variables map from the job and add those we want to propagate back to the process
         // TODO: I seem to be missing the orderTotal variable from this map despite sending it via zbctl... why?
