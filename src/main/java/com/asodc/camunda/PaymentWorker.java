@@ -1,9 +1,14 @@
 package com.asodc.camunda;
 
-import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.camunda.zeebe.spring.client.annotation.Variable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * Worker class to handle tasks related to the payment process.
@@ -11,10 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentWorker {
     /**
-     * Zeebe client.
+     * Logger for the PaymentWorker.
      */
-    @Autowired
-    private ZeebeClient client;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentWorker.class);
 
     /**
      * Gets the credit of the customer with the id {@code customerId}.
@@ -22,45 +26,62 @@ public class PaymentWorker {
      * of the customer ID and returns it as the customer credit value.
      *
      * @param customerId the ID of the customer for which to get the credit
-     * @return the customer's current credit
      */
-    @JobWorker(type = "guthaben-auslesen")
-    /*
-        TODO: It looks like I am missing some mysterious parameters here:
-         - final JobClient jobClient
-         - final ActivatedJob job
-         Also, to auto-map process variables to the method parameters,
-         I need to use the @Variable annotation on them.
-         I think variables are communicated back to the process via a Map,
-         which you need to explicitly send via the JobClient.
-         Changing these methods also necessitates a change to the tests!
-         Apparently, JDK 17 is recommended for the test framework that Camunda
-         provides, so there's a lot of work to do here.
-     */
-    public Double getCustomerCredit(String customerId) {
-        // customerId is null here because I have not used the @Variable annotation!
-        String fakeCredit = customerId.substring(customerId.length() - 2);
+    @JobWorker(type = "getCustomerCredit", autoComplete = false)
+    public void getCustomerCredit(final JobClient jobClient,
+                                  final ActivatedJob job,
+                                  @Variable String customerId) {
+        LOGGER.info("Started worker for job type : " + job.getType());
 
-        return Double.parseDouble(fakeCredit);
+        // generate some fake credit
+        double customerCredit = Double.parseDouble(customerId.substring(customerId.length() - 2));
+        LOGGER.info("Customer credit: " + customerCredit);
+
+        // get the existing variables map from the job and add those we want to propagate back to the process
+        // TODO: I seem to be missing the orderTotal variable from this map despite sending it via zbctl... why?
+        Map<String, Object> variables = job.getVariablesAsMap();
+        variables.put("customerCredit", customerCredit);
+
+        LOGGER.info("VARIABLES MAP: " + variables);
+
+        // propagate the map back to the process
+        jobClient.newCompleteCommand(job)
+                .variables(variables)
+                .send();
+
+        LOGGER.info("Worker finished!");
     }
 
     /**
      * The exercise calls this method "deductCredit", but I don't like that name.
      * I also don't like the suggested second parameter name "amountToDeduct".
-     * Returns the open amount for an order.
+     * Returns the open amount for an order, after applying customer credit, if any.
      * If the customer credit is greater than the amount, the end payment amount is 0.0,
      * otherwise the end payment amount is the original payment amount minus the customer's credit.
      *
      * @param customerCredit the customer's current credit
      * @param amountToPay    the initial amount of the payment, without credit deductions
-     * @return the end payment amount after the customer's credit has been applied
      */
-    @JobWorker(type = "guthaben-belasten")
-    public Double getEndPaymentAmount(Double customerCredit, Double amountToPay) {
-        if (customerCredit > amountToPay)
-            return 0.0;
-        else {
-            return amountToPay - customerCredit;
-        }
+    @JobWorker(type = "getEndPaymentAmount")
+    public void getEndPaymentAmount(final JobClient jobClient,
+                                    final ActivatedJob job,
+                                    @Variable Double customerCredit,
+                                    @Variable Double amountToPay) {
+        LOGGER.info("Started worker for job type : " + job.getType());
+
+        // calculate the end amount to be paid by the customer
+        double endAmountToPay = customerCredit > amountToPay ? 0.0 : amountToPay - customerCredit;
+        LOGGER.info("End amount to pay: " + endAmountToPay);
+
+        // create a map to store variables we want to propagate back to the process
+        Map<String, Object> variables = job.getVariablesAsMap();
+        variables.put("orderTotal", endAmountToPay);
+
+        // propagate the map back to the process
+        jobClient.newCompleteCommand(job)
+                .variables(variables)
+                .send();
+
+        LOGGER.info("Worker finished!");
     }
 }

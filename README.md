@@ -12,7 +12,7 @@ This project uses `JDK 17`.
 
 All of this stuff uses a Camunda Cloud Cluster, so you'll need to set that up first (out of scope).
 
-When you have that set up, you'll also need to create the Payment Process in BPMN (also out of scope).
+When you have that set up, you'll also need to create the Payment Process in BPMN (it's included in the resouces).
 
 To connect the application to the cluster, you'll need to add the file `application.properties` with all relevant info
 to the `src/main/resources` folder (replace the values with those in your Camunda console).
@@ -24,6 +24,21 @@ zeebe.client.cloud.clusterId=clusterId
 zeebe.client.cloud.clientId=clientId
 zeebe.client.cloud.clientSecret=clientSecret
 ```
+
+## Execution
+
+Start the main method to launch the application.
+
+Use `zbctl` to send a message and trigger the process.
+
+Note you will have to either set environment variables for the various connection parameters, or in-line them with flags
+in the command, like so:
+
+```
+zbctl create instance PaymentProcess --variables "{\"customerId\": \"12345\", \"orderTotal\": 45.99}" --address address.zeebe.camunda.io:443 --clientId clientId --clientSecret clientSecret --authzUrl https://login.cloud.camunda.io/oauth/token
+```
+
+Check the console for worker log messages and `Camunda Operate` to check on the status of the process.
 
 ## Links
 
