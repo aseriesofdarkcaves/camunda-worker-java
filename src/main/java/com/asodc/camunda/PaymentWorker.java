@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,24 +31,24 @@ public class PaymentWorker {
     @JobWorker(type = "getCustomerCredit", autoComplete = false)
     public void getCustomerCredit(final JobClient jobClient,
                                   final ActivatedJob job,
-                                  @Variable String customerId) {
+                                  @Variable String customerId,
+                                  @Variable double orderTotal) {
         LOGGER.info("Started worker for job type : " + job.getType());
 
         // generate some fake credit
         double customerCredit = Double.parseDouble(customerId.substring(customerId.length() - 2));
         LOGGER.info("Credit for customerId " + customerId + ": " + customerCredit);
 
-        // get the existing variables map from the job and add those we want to propagate back to the process
-        // TODO: I seem to be missing the orderTotal variable from this map despite sending it via zbctl... why?
-        Map<String, Object> variables = job.getVariablesAsMap();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("customerCredit", customerCredit);
 
         LOGGER.info("VARIABLES MAP: " + variables);
 
-        // complete the job and propagate the variables map back to the process
+        // complete the job and merge the variables map back to the process
         jobClient.newCompleteCommand(job)
                 .variables(variables)
-                .send();
+                .send()
+                .join();
 
         LOGGER.info("Worker finished!");
     }
@@ -73,14 +74,14 @@ public class PaymentWorker {
         double endAmountToPay = customerCredit > amountToPay ? 0.0 : amountToPay - customerCredit;
         LOGGER.info("End amount to pay: " + endAmountToPay);
 
-        // get the existing variables map from the job and add those we want to propagate back to the process
-        Map<String, Object> variables = job.getVariablesAsMap();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("orderTotal", endAmountToPay);
 
-        // complete the job and propagate the variables map back to the process
+        // complete the job and merge the variables map back to the process
         jobClient.newCompleteCommand(job)
                 .variables(variables)
-                .send();
+                .send()
+                .join();
 
         LOGGER.info("Worker finished!");
     }

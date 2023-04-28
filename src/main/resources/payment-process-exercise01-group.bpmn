@@ -11,7 +11,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0fmmtw0" sourceRef="StartEvent_1" targetRef="Activity_09si3nn" />
     <bpmn:sequenceFlow id="Flow_1nb7y3i" name="No" sourceRef="Gateway_0slqwrt" targetRef="Gateway_023ibo1">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=not(orderTotal &lt;= customerCredit)</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=customerCredit &gt; 0</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="Gateway_023ibo1">
       <bpmn:incoming>Flow_1nb7y3i</bpmn:incoming>
@@ -20,7 +20,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1l63b3l" sourceRef="Activity_09si3nn" targetRef="Gateway_0slqwrt" />
     <bpmn:sequenceFlow id="Flow_1ijmehd" name="Yes" sourceRef="Gateway_0slqwrt" targetRef="Activity_1yqhxhk">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=orderTotal &lt;= customerCredit</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=customerCredit &gt; 0</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_12fdakp" sourceRef="Activity_1yqhxhk" targetRef="Gateway_023ibo1" />
     <bpmn:exclusiveGateway id="Gateway_1pgvp2b" name="Is there a remaining payment amount?">

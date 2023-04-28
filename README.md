@@ -44,6 +44,21 @@ zbctl create instance PaymentProcess --variables "{\"customerId\": \"12345\", \"
 
 Check the console for worker log messages and `Camunda Operate` to check on the status of the process.
 
+## Use of Maps in Workers
+
+To get existing variables from the process you need to have them declared in your method parameters with the `@Variable`
+annotation.
+
+Additionally, only the variables which have been annotated will be included in the Map returned
+by `job.getVariablesAsMap()`.
+
+New and existing variables can be added/merged with the existing ones in the process via
+
+```java
+Map<String, Object> variables = new HashMap<>();
+variables.put("customerCredit", customerCredit);
+```
+
 ## Links
 
 - https://training.camunda.com/camunda8-dev/master/ - Exercises taken from here
@@ -60,8 +75,6 @@ The [example repo](https://github.com/camunda-consulting/ca058-solutions) which 
 out shows multiple ways of implementing workers in Java.
 
 Note that both examples use "Services" to encapsulate business logic away from the worker class.
-
-A Map is used to communicate variable values back to the process.
 
 The job can be controlled in the code via the job client - I think the new version completes the job automatically by
 default, which is why the annotation specifies `autoComplete = false`.
