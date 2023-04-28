@@ -44,7 +44,7 @@ public class PaymentWorker {
 
         LOGGER.info("VARIABLES MAP: " + variables);
 
-        // propagate the map back to the process
+        // complete the job and propagate the variables map back to the process
         jobClient.newCompleteCommand(job)
                 .variables(variables)
                 .send();
@@ -73,11 +73,11 @@ public class PaymentWorker {
         double endAmountToPay = customerCredit > amountToPay ? 0.0 : amountToPay - customerCredit;
         LOGGER.info("End amount to pay: " + endAmountToPay);
 
-        // create a map to store variables we want to propagate back to the process
+        // get the existing variables map from the job and add those we want to propagate back to the process
         Map<String, Object> variables = job.getVariablesAsMap();
         variables.put("orderTotal", endAmountToPay);
 
-        // propagate the map back to the process
+        // complete the job and propagate the variables map back to the process
         jobClient.newCompleteCommand(job)
                 .variables(variables)
                 .send();

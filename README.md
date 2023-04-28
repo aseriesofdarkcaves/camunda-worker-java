@@ -35,7 +35,11 @@ Note you will have to either set environment variables for the various connectio
 in the command, like so:
 
 ```
-zbctl create instance PaymentProcess --variables "{\"customerId\": \"12345\", \"orderTotal\": 45.99}" --address address.zeebe.camunda.io:443 --clientId clientId --clientSecret clientSecret --authzUrl https://login.cloud.camunda.io/oauth/token
+zbctl create instance PaymentProcess --variables "{\"customerId\": \"12345\", \"orderTotal\": 45.99}" \
+ --address address.zeebe.camunda.io:443 \
+ --clientId clientId \
+ --clientSecret clientSecret \
+ --authzUrl https://login.cloud.camunda.io/oauth/token
 ```
 
 Check the console for worker log messages and `Camunda Operate` to check on the status of the process.
