@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the PaymentWorker.
+ * TODO: these will be broken when I change the worker API - I will probably also need to change to using whatever
+ *  testing framework Camunda recommends instead of just JUnit.
  */
 public class PaymentWorkerTests {
     /**
