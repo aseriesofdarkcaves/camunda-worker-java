@@ -62,7 +62,7 @@ public class PaymentWorker {
      * @param customerCredit the customer's current credit
      * @param amountToPay    the initial amount of the payment, without credit deductions
      */
-    @JobWorker(type = "getEndPaymentAmount")
+    @JobWorker(type = "getEndPaymentAmount", autoComplete = false)
     public void getEndPaymentAmount(final JobClient jobClient,
                                     final ActivatedJob job,
                                     @Variable Double customerCredit,
