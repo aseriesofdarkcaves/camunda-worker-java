@@ -10,13 +10,16 @@ Attempts at setting up a Java-based worker for `Camunda Platform 8`.
 
 This project uses `JDK 17`.
 
-All of this stuff uses a Camunda Cloud Cluster, so you'll need to set that up first (out of scope).
+All of this stuff uses a Camunda Cloud Cluster, so you'll need to set up a trial account first
+[here](https://signup.camunda.com/accounts). The trial account should give you access to a test cluster for 30-days.
 
-When you have that set up, you'll also need to create the Payment Process in BPMN (it's included in the resouces).
+When you have that set up, you'll also need to create the Payment Process in BPMN using the Camunda Web Modeler
+(check `src/main/resources` for the diagram XML).
 
-To connect the application to the cluster, you'll need to add the file `application.properties` with all relevant info
-to the `src/main/resources` folder (replace the values with those in your Camunda console).
-See the [spring-zeebe Github](https://github.com/camunda-community-hub/spring-zeebe) page for more details.
+To connect the application to the cluster, you'll need to download your credentials which you'll find in the Camunda
+Console. The file that is generated and downloaded can be put into the following location:
+`src/main/resources/application.properties` (see below for example content).
+See the [spring-zeebe GitHub](https://github.com/camunda-community-hub/spring-zeebe) page for more details.
 
 ```properties
 zeebe.client.cloud.region=region
@@ -25,14 +28,17 @@ zeebe.client.cloud.clientId=clientId
 zeebe.client.cloud.clientSecret=clientSecret
 ```
 
+To trigger the process via an event, you can use the command-line tool called `zbctl`, which can be downloaded from the
+Camunda Zeebe [releases](https://github.com/camunda/zeebe/releases) page.
+
 ## Execution
 
-Start the main method to launch the application.
+Start the main method to launch the Java application.
 
 Use `zbctl` to send a message and trigger the process.
 
-Note you will have to either set environment variables for the various connection parameters, or in-line them with flags
-in the command, like so:
+Note that you will have to either set environment variables for the various connection parameters, or in-line them with
+flags in the command, like so:
 
 ```
 zbctl create instance PaymentProcess --variables "{\"customerId\": \"12345\", \"orderTotal\": 45.99}" \
@@ -42,7 +48,7 @@ zbctl create instance PaymentProcess --variables "{\"customerId\": \"12345\", \"
  --authzUrl https://login.cloud.camunda.io/oauth/token
 ```
 
-Check the console for worker log messages and `Camunda Operate` to check on the status of the process.
+Check your IDE's console for worker log messages and `Camunda Operate` to check on the status of the process.
 
 ## Use of Maps in Workers
 
@@ -52,12 +58,8 @@ annotation.
 Additionally, only the variables which have been annotated will be included in the Map returned
 by `job.getVariablesAsMap()`.
 
-New and existing variables can be added/merged with the existing ones in the process via
-
-```java
-Map<String, Object> variables = new HashMap<>();
-variables.put("customerCredit", customerCredit);
-```
+New and existing variables can be added/merged with the existing ones in the process via the `JobClient` fluent
+API (`.variables(mapToMerge)`).
 
 ## Links
 
